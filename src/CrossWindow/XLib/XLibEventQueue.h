@@ -9,7 +9,7 @@
 
 namespace xwin
 {
-class Window;
+struct Window;
 
 class EventQueue
 {

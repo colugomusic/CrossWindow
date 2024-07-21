@@ -10,7 +10,7 @@
  */
 namespace xwin
 {
-class Window;
+struct Window;
 
 enum class EventType : size_t
 {

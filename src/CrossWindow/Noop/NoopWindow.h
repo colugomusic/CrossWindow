@@ -6,9 +6,9 @@
 
 namespace xwin
 {
-class Window;
+struct Window;
 
-class Window
+struct Window
 {
   public:
     ~Window();

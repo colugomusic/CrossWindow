@@ -14,7 +14,7 @@ namespace xwin
  *
  * https://xcb.freedesktop.org/manual/group__XCB__Core__API.html
  */
-class Window
+struct Window
 {
 public:
     Window();

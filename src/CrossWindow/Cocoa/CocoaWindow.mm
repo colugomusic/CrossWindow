@@ -1,4 +1,4 @@
-#include "CocoaWindow.h"
+#include "Window.h"
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import <QuartzCore/CAOpenGLLayer.h>
@@ -67,25 +67,49 @@
 
 @end
 
+namespace xwin {	
 
-namespace xwin
-{	
-Window::Window()
-{
+Window::Window() {
 	window =
 	view =
 	layer = nullptr;
 }
 
-Window::~Window()
-{
-	if( window != nullptr)
-	{
-		close();
+Window::~Window() {
+	destroy();
+}
+
+void Window::destroy() {
+	if( window != nullptr) {
+		[(XWinWindow*)window release];
+		[(XWinView*)view release];
+		[(CALayer*)layer release];
+		
+		window = nullptr;
+		view = nullptr;
+		layer = nullptr;
 	}
 }
 
-bool Window::create(const WindowDesc& desc, EventQueue& eventQueue)
+void Window::set_position(unsigned x, unsigned y) {
+	NSPoint point = NSMakePoint(x, y);
+	point  = [((XWinWindow*)window) convertPointToScreen:point];
+	[((XWinWindow*)window) setFrameOrigin: point];
+}
+
+void Window::set_size(unsigned width, unsigned height) {
+	NSRect rect = NSMakeRect(0, 0, width, height);
+	[((XWinWindow*)window) setContentSize:rect.size];
+	[((XWinWindow*)window) setFrame:rect display:YES];
+	[((XWinView*)view) setFrame:rect];
+	[((XWinView*)view) setNeedsDisplay:YES];
+}
+
+void* Window::get_native_handle() {}
+	return view;
+}
+
+bool Window::create(const WindowDesc& desc, EventQueue& eventQueue, void* parentView)
 {
 	NSApplication* nsApp = (NSApplication*)getXWinState().application;
 	
@@ -132,6 +156,15 @@ bool Window::create(const WindowDesc& desc, EventQueue& eventQueue)
 	[w setHasShadow:desc.hasShadow];
 	[w setTitlebarAppearsTransparent:!desc.frame];
 
+	if (parentView) {
+		NSView* parentView = (NSView*)(parentView);
+		NSWindow* parentWindow = [((NSView*)(parentView)) window];
+		[w setLevel:[parentWindow level] + 1];
+	}
+	else {
+		[w setLevel:NSNormalWindowLevel]];
+	}
+
 	// Setup NSView
 	rect = [w backingAlignedRect:rect options:NSAlignAllEdgesOutward];
 	view = [[XWinView alloc] initWithFrame:rect];
@@ -143,30 +176,11 @@ bool Window::create(const WindowDesc& desc, EventQueue& eventQueue)
 	[w setContentView:(XWinView*)view];
 	[w makeKeyAndOrderFront:nsApp];
 	
-	
 	eventQueue.update();
 	
 	mDesc = desc;
 	
-	
-	
 	return true;
-}
-
-WindowDesc Window::getDesc()
-{
-	return mDesc;
-}
-
-void Window::close()
-{
-	[(XWinWindow*)window release];
-	[(XWinView*)view release];
-	[(CALayer*)layer release];
-	
-	window = nullptr;
-	view = nullptr;
-	layer = nullptr;
 }
 
 void Window::setLayer(LayerType type)
@@ -202,12 +216,12 @@ void Window::setMousePosition(unsigned x, unsigned y)
 	CGWarpMouseCursorPosition(pos);
 }
 
-UVec2 Window::getCurrentDisplaySize()
-{
+UVec2 Window::getCurrentDisplaySize() {
 	UVec2 size;
 	NSRect screenRect = [[NSScreen mainScreen] frame];
 	size.x = screenRect.size.width;
 	size.y = screenRect.size.height;
 	return size;
 }
-}
+
+} // namespace xwin

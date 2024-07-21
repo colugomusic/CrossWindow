@@ -79,7 +79,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
         rawInputDevice[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
         rawInputDevice[0].usUsage = HID_USAGE_GENERIC_MOUSE;
         rawInputDevice[0].dwFlags = RIDEV_INPUTSINK;
-        rawInputDevice[0].hwndTarget = window->hwnd;
+        rawInputDevice[0].hwndTarget = window->m.hwnd;
         RegisterRawInputDevices(rawInputDevice, 1, sizeof(rawInputDevice[0]));
     }
 
@@ -95,12 +95,12 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
-        BeginPaint(window->hwnd, &ps);
+        BeginPaint(window->m.hwnd, &ps);
         RECT rect;
-        GetWindowRect(window->hwnd, &rect);
+        GetWindowRect(window->m.hwnd, &rect);
         int cxWidth = rect.right - rect.left;
         int cyHeight = rect.bottom - rect.top;
-        unsigned bg = window->getDesc().backgroundColor;
+        unsigned bg = window->m.bg_color;
         unsigned r = (bg & 0xff000000) >> 24;
         unsigned g = (bg & 0x00ff0000) >> 16;
         unsigned b = (bg & 0x0000ff00) >> 8;
@@ -110,8 +110,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
         rect.right = cxWidth;
         rect.bottom = cyHeight;
         FillRect(ps.hdc, &rect, BorderBrush);
-        EndPaint(window->hwnd, &ps);
-
+        EndPaint(window->m.hwnd, &ps);
         e = xwin::Event(xwin::EventType::Paint, window);
         break;
     }
@@ -288,7 +287,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
     }
     case WM_MOUSEMOVE:
     {
-        HWND hwnd = window->hwnd;
+        HWND hwnd = window->m.hwnd;
         // Extract the mouse local coordinates
         int x = static_cast<short>(LOWORD(msg.lParam));
         int y = static_cast<short>(HIWORD(msg.lParam));
@@ -704,7 +703,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
         unsigned width, height;
         unsigned STEP = 1;
         PRECT rectp = (PRECT)msg.lParam;
-        HWND hwnd = window->hwnd;
+        HWND hwnd = window->m.hwnd;
 
         // Get the window and client dimensions
         tagRECT wind, rect;
@@ -729,13 +728,13 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
     case WM_NCHITTEST:
     {
         RECT rect;
-        GetWindowRect(window->hwnd, &rect);
+        GetWindowRect(window->m.hwnd, &rect);
         int x, y, width, height;
         x = static_cast<int>(GET_X_LPARAM(msg.lParam)) - rect.left;
         y = static_cast<int>(GET_Y_LPARAM(msg.lParam)) - rect.top;
         width = static_cast<int>(rect.right - rect.left);
         height = static_cast<int>(rect.bottom - rect.top);
-        int topBorder = IsZoomed(window->hwnd) ? 0 : BORDERWIDTH;
+        int topBorder = IsZoomed(window->m.hwnd) ? 0 : BORDERWIDTH;
 
         // Iterate through window->mousePositionRects.
 
@@ -757,7 +756,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
         WORD curDPI = HIWORD(msg.wParam);
         FLOAT fscale = (float)curDPI / USER_DEFAULT_SCREEN_DPI;
         e = xwin::Event(DpiData(fscale), window);
-        if (!IsZoomed(window->hwnd))
+        if (!IsZoomed(window->m.hwnd))
         {
             RECT* const prcNewWindow = (RECT*)msg.lParam;
             if (prcNewWindow)
@@ -769,17 +768,15 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
     }
     case WM_NCCALCSIZE:
     {
-        if (!window->getDesc().frame)
-        {
-            if (msg.lParam && msg.wParam)
-            {
+        if (!window->m.frame) {
+            if (msg.lParam && msg.wParam) {
                 NCCALCSIZE_PARAMS* sz = (NCCALCSIZE_PARAMS*)msg.lParam;
                 int titleHeight = TITLEBARHEIGHT;
-                if (IsZoomed(window->hwnd))
+                if (IsZoomed(window->m.hwnd))
                 {
                     titleHeight = TITLEBARZOOMHEIGHT;
                 }
-                int iDpi = GetDpiForWindow(window->hwnd);
+                int iDpi = GetDpiForWindow(window->m.hwnd);
                 if (iDpi != USER_DEFAULT_SCREEN_DPI)
                 {
                     titleHeight =
@@ -794,8 +791,8 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
     {
         MINMAXINFO* min_max = reinterpret_cast<MINMAXINFO*>(msg.lParam);
 
-        min_max->ptMinTrackSize.x = window->getDesc().minWidth;
-        min_max->ptMinTrackSize.y = window->getDesc().minHeight;
+        min_max->ptMinTrackSize.x = window->m.min_width;
+        min_max->ptMinTrackSize.y = window->m.min_height;
         break;
     }
     default:
@@ -816,7 +813,7 @@ LRESULT EventQueue::pushEvent(MSG msg, Window* window)
           currentWindowRect.right == -1))
     {
         RECT* const prcNewWindow = (RECT*)msg.lParam;
-        SetWindowPos(window->hwnd, NULL, currentWindowRect.left,
+        SetWindowPos(window->m.hwnd, NULL, currentWindowRect.left,
                      currentWindowRect.top,
                      currentWindowRect.right - currentWindowRect.left,
                      currentWindowRect.bottom - currentWindowRect.top,

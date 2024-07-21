@@ -2,7 +2,7 @@
 
 namespace xwin
 {
-class Window
+struct Window
 {
 public:
     Window();    

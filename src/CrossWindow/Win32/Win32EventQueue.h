@@ -8,7 +8,7 @@
 
 namespace xwin
 {
-class Window;
+struct Window;
 
 class EventQueue
 {
@@ -33,7 +33,7 @@ class EventQueue
     };
     void setProcessingMode(ProcessingMode mode);
 
-    friend class Window;
+    friend struct Window;
 
   protected:
     LRESULT pushEvent(MSG msg, Window* window);

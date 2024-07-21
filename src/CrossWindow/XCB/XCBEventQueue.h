@@ -8,7 +8,7 @@
 
 namespace xwin
 {
-    class Window;
+    struct Window;
 
     /**
      * Events - https://xcb.freedesktop.org/tutorial/events/

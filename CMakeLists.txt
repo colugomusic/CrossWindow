@@ -201,6 +201,7 @@ if(XWIN_API STREQUAL "COCOA")
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "2"
 )
+
 elseif(XWIN_API STREQUAL "UIKIT")
     add_definitions("-x objective-c++")
     # Locate system libraries on iOS
@@ -221,7 +222,7 @@ elseif(XWIN_API STREQUAL "UIKIT")
     ${SYSTEMCONFIGURATION}
     )
     set_target_properties(
-    ${PROJECT_NAME} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "2"
+        ${PROJECT_NAME} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "2"
     )
     # Turn on ARC
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
@@ -243,6 +244,8 @@ elseif(XWIN_API STREQUAL "XCB")
     target_include_directories(${PROJECT_NAME} PUBLIC ${X11_xcb_INCLUDE_PATH})
 endif()
 # =============================================================
+
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 # Preprocessor Definitions
 target_compile_definitions(${PROJECT_NAME} PUBLIC XWIN_${XWIN_API}=1)

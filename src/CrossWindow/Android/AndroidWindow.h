@@ -6,7 +6,7 @@
 
 namespace xwin
 {
-	class Window
+	struct Window
 	{
 		Window();
 
