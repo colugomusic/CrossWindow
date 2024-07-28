@@ -61,7 +61,7 @@ auto Window::get_size(unsigned* width, unsigned* height) -> void {
 auto Window::set_position(unsigned x, unsigned y) -> void {
 	// Set the window position
 	uint32_t coords[] = {x, y};
-	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coord);
+	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coords);
 }
 
 auto Window::set_size(unsigned width, unsigned height) -> void {
