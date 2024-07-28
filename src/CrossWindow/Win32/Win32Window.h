@@ -15,6 +15,7 @@ struct ITaskbarList3;
 namespace xwin {
 
 struct Window {
+	Window() = default;
 	~Window();
 	[[nodiscard]] auto create(const WindowDesc& desc, EventQueue& eventQueue, void* parentWindow) -> bool;
 	[[nodiscard]] auto get_client_data() -> std::any { return m.client_data; }

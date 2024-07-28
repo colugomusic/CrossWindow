@@ -12,6 +12,7 @@ typedef Window XLibWindow;
 namespace xwin {
 
 struct Window {
+	Window() = default;
 	~Window();
 	[[nodiscard]] auto get_client_data() -> std::any { return client_data; }
 	[[nodiscard]] auto get_native_handle() -> void* { return (void*)(window_); }
