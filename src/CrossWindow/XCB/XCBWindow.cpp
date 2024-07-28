@@ -35,7 +35,8 @@ auto Window::create(const WindowDesc& desc, EventQueue& eventQueue, void* parent
 	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coords);
 
 	// Set the child window to always be on top of the parent window
-	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_STACK_MODE, (uint32_t[]){XCB_STACK_MODE_ABOVE});
+	uint32_t mode[1] = {XCB_STACK_MODE_ABOVE};
+	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_STACK_MODE, mode);
 
 	xcb_flush(mConnection);
 
