@@ -60,12 +60,14 @@ auto Window::get_size(unsigned* width, unsigned* height) -> void {
 
 auto Window::set_position(unsigned x, unsigned y) -> void {
 	// Set the window position
-	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, (uint32_t[]){x, y});
+	uint32_t coords[] = {x, y};
+	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coord);
 }
 
 auto Window::set_size(unsigned width, unsigned height) -> void {
 	// Set the window size
-	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, (uint32_t[]){width, height});
+	uint32_t dims[] = {width, height};
+	xcb_configure_window(mConnection, mXcbWindowId, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, dims);
 }
 
 } // namespace xwin
