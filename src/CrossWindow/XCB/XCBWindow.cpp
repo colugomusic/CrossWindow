@@ -14,7 +14,7 @@ auto Window::create(const WindowDesc& desc, EventQueue& eventQueue, void* parent
 	mScreen = xwinState.screen;
 
 	mXcbWindowId = xcb_generate_id(mConnection);
-	const auto parent_window_id = reinterpret_cast<xcb_window_t>(parentWindow);
+	const auto parent_window_id = (xcb_window_t)(uintptr_t)(parentWindow);
 
 	uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
 	uint32_t value_list[2] = {
