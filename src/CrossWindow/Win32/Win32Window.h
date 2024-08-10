@@ -17,6 +17,8 @@ namespace xwin {
 struct Window {
 	Window() = default;
 	~Window();
+	Window(Window&& rhs) noexcept;
+	Window& operator=(Window&& rhs) noexcept;
 	[[nodiscard]] auto create(const WindowDesc& desc, EventQueue& eventQueue, void* parentWindow) -> bool;
 	[[nodiscard]] auto get_client_data() -> std::any { return m.client_data; }
 	[[nodiscard]] auto is_valid() const -> bool { return m.hwnd != 0; }

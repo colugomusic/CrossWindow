@@ -34,10 +34,23 @@ Window::~Window() {
 	destroy();
 }
 
+Window::Window(Window&& rhs) noexcept : m(std::move(rhs.m)) {
+	rhs.m.hwnd = 0;
+}
+
+Window& Window::operator=(Window&& rhs) noexcept {
+	if (this != &rhs) {
+		destroy();
+		m = std::move(rhs.m);
+		rhs.m.hwnd = 0;
+	}
+	return *this;
+}
 
 auto Window::destroy() -> void {
 	if (m.hwnd) {
 		DestroyWindow(m.hwnd);
+		_hwndMap.erase(m.hwnd);
 		m.hwnd = 0;
 	}
 }
